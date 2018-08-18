@@ -61,6 +61,9 @@ public final class ActivityData {
 
     /// Background color of the UI blocker
     let backgroundColor: UIColor
+	
+	/// View to show an indicator
+	let fromView: UIView?
 
     /**
      Create information package used to display UI blocker.
@@ -90,7 +93,8 @@ public final class ActivityData {
                 displayTimeThreshold: Int? = nil,
                 minimumDisplayTime: Int? = nil,
                 backgroundColor: UIColor? = nil,
-                textColor: UIColor? = nil) {
+                textColor: UIColor? = nil,
+				fromView: UIView? = nil) {
         self.size = size ?? NVActivityIndicatorView.DEFAULT_BLOCKER_SIZE
         self.message = message ?? NVActivityIndicatorView.DEFAULT_BLOCKER_MESSAGE
         self.messageFont = messageFont ?? NVActivityIndicatorView.DEFAULT_BLOCKER_MESSAGE_FONT
@@ -102,6 +106,7 @@ public final class ActivityData {
         self.minimumDisplayTime = minimumDisplayTime ?? NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME
         self.backgroundColor = backgroundColor ?? NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR
         self.textColor = textColor ?? color ?? NVActivityIndicatorView.DEFAULT_TEXT_COLOR
+		self.fromView = fromView
     }
 }
 
@@ -258,7 +263,7 @@ public final class NVActivityIndicatorPresenter {
 
     // MARK: - Helpers
 
-    fileprivate func show(with activityData: ActivityData, _ fadeInAnimation: FadeInAnimation?) {
+	fileprivate func show(with activityData: ActivityData, _ fadeInAnimation: FadeInAnimation?) {
         let containerView = UIView(frame: UIScreen.main.bounds)
 
         containerView.backgroundColor = activityData.backgroundColor
@@ -302,7 +307,14 @@ public final class NVActivityIndicatorPresenter {
             containerView.addConstraint(spacingConstraint)
             }())
 
-        guard let keyWindow = UIApplication.shared.keyWindow else { return }
+		var viewToShow: UIView?
+		if let fromView = activityData.fromView {
+			viewToShow = fromView
+		} else if let window = UIApplication.shared.keyWindow {
+			viewToShow = window
+		}
+		
+        guard let keyWindow = viewToShow else { return }
 
         keyWindow.addSubview(containerView)
 
