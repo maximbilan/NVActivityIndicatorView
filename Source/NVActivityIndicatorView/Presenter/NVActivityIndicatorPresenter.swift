@@ -215,6 +215,7 @@ public final class NVActivityIndicatorPresenter {
 
         return label
     }()
+	fileprivate var presenterView: UIView!
 
     fileprivate var state: State = .stopped
     fileprivate var data: ActivityData? // Shared activity data across states
@@ -307,14 +308,13 @@ public final class NVActivityIndicatorPresenter {
             containerView.addConstraint(spacingConstraint)
             }())
 
-		var viewToShow: UIView?
 		if let fromView = activityData.fromView {
-			viewToShow = fromView
+			presenterView = fromView
 		} else if let window = UIApplication.shared.keyWindow {
-			viewToShow = window
+			presenterView = window
 		}
 		
-        guard let keyWindow = viewToShow else { return }
+        guard let keyWindow = presenterView else { return }
 
         keyWindow.addSubview(containerView)
 
@@ -330,7 +330,7 @@ public final class NVActivityIndicatorPresenter {
     }
 
     fileprivate func hide(_ fadeOutAnimation: FadeOutAnimation?) {
-        guard let keyWindow = UIApplication.shared.keyWindow else { return }
+        guard let keyWindow = presenterView else { return }
 
         for item in keyWindow.subviews
             where item.restorationIdentifier == restorationIdentifier {
